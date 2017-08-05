@@ -30,6 +30,9 @@ class Summarizer:
 	Other possible optimizations (may not improve performance!):
 	- Tweak length of summary, tweak number of top words to use
 	- increase weight of proper nouns, names, sentences with dates/times
+	- Tweak sentence importance scoring to account for length of sentence (maybe freq-score^2/len)
+	- Parse sentences to remove leading conjunctions
+
 	"""
 	def __init__(self, filename):
 		"""
@@ -53,7 +56,7 @@ class Summarizer:
 		pos = set(["NN","NNS","NNP","NNPS"])
 		#calculate frequency of words that we want
 		for i in self.tagset:
-			if i[1] in pos:
+			if i[1] in pos and len(i[0])>2:
 				if i[0] not in self.freq: self.freq[i[0]] = 1
 				else: self.freq[i[0]]+=1
 		print("initialization complete")
@@ -72,7 +75,7 @@ class Summarizer:
 		#calculate scores for each sentence, get top 5 scoring sentences, return in order of appearence in source
 		scores = [[self.sentences[i],i,self.score(self.sentences[i])] for i in range(1,len(self.sentences))]
 		scores = sorted(scores, key = itemgetter(2))[index:]
-		summary = [i[0] for i in sorted(scores, key = itemgetter(1))]
+		summary = [self.format(i[0]) for i in sorted(scores, key = itemgetter(1))]
 
 		#print results, note special treatment of first sentence
 		print(" ".join([self.sentences[0]]+summary))
@@ -84,9 +87,15 @@ class Summarizer:
 		score = 0
 		tokens = nltk.word_tokenize(sentence)
 		for i in tokens:
-			if i.lower() in self.top: score+=1
+			if i in self.top: score+=1
 		return score
 
+	def format(self,sentence):
+		"""
+		This should be used to format sentences used in the summary
+		ATM it does nothing
+		"""
+		return sentence
 
 
 if __name__ == "__main__":

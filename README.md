@@ -23,3 +23,5 @@ Current optimizations:
 Other possible optimizations (may not improve performance!):
 - Tweak length of summary, tweak number of top words to use
 - increase weight of proper nouns, names, sentences with dates/times
+- Tweak sentence importance scoring to account for length of sentence (maybe freq-score^2/len)
+- Parse sentences to remove leading conjunctions
