@@ -16,13 +16,6 @@ To use:
 Things to work on:
 - Add ability to summarize from news website (integrate BeautifulSoup)
 
-Basic flow:
-1. import text
-2. split text into sentences
-3. find x most frequent nouns in text
-4. score sentences by occurrences of most frequent nouns
-5. return x highest scoring sentences in order
-
 Current optimizations:
 - will always return the first sentence since that is the headline
 - double counts words occurring in the first sentence for calculating most frequently occurring words
