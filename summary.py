@@ -12,6 +12,8 @@ To use:
 Things to work on:
 - Add ability to summarize from news website (integrate BeautifulSoup)
 """
+DEBUG = True
+
 class Summarizer:
 	"""
 	An instance of summarizer script
@@ -26,12 +28,21 @@ class Summarizer:
 	Current optimizations:
 	- will always return the first sentence since that is the headline
 	- double counts words occurring in the first sentence for calculating most frequently occurring words
+	- ignores 2 letter words that count as nouns (ex: US, Mr.)
 	
 	Other possible optimizations (may not improve performance!):
-	- Tweak length of summary, tweak number of top words to use
-	- increase weight of proper nouns, names, sentences with dates/times
-	- Tweak sentence importance scoring to account for length of sentence (maybe freq-score^2/len)
-	- Parse sentences to remove leading conjunctions
+	- tweak length of summary, tweak number of top words to use
+	- increase weight of proper nouns and dates/times
+	- tweak sentence importance scoring to account for length of sentence (maybe freq-score^2/len)
+	- Treat newline chars as periods, ignore sentences less than x words long (necessary for web parsing)
+	
+	TODO:
+	- Parse summary sentences to remove leading conjunctions (Ex: "But this happened." should be "This happened.")
+	- Add command line arguments: 
+		- source (parse whether file or website)
+		- number of sentences in summary (default to 20% if invalid)
+	- Add ability to parse text from website (see possible optimizations)
+
 
 	"""
 	def __init__(self, filename):
@@ -54,7 +65,8 @@ class Summarizer:
 
 		#parts of speech to track frequency of - sing/plural common nouns, sing/plural proper nouns
 		pos = set(["NN","NNS","NNP","NNPS"])
-		#calculate frequency of words that we want
+
+		#calculate frequency of words that we want, note that tagset double counts the first sentence
 		for i in self.tagset:
 			if i[1] in pos and len(i[0])>2:
 				if i[0] not in self.freq: self.freq[i[0]] = 1
@@ -70,11 +82,13 @@ class Summarizer:
 		#calculate top 5 most frequently appearing words
 		for i in sorted([(j,self.freq[j]) for j in self.freq], key=itemgetter(1))[-5:]:
 			self.top.add(i[0])
-		print(self.top)
+		if DEBUG: print(self.top)
 
 		#calculate scores for each sentence, get top 5 scoring sentences, return in order of appearence in source
+		#note that this ignores the first sentence
 		scores = [[self.sentences[i],i,self.score(self.sentences[i])] for i in range(1,len(self.sentences))]
 		scores = sorted(scores, key = itemgetter(2))[index:]
+		if DEBUG: print([i[2] for i in scores])
 		summary = [self.format(i[0]) for i in sorted(scores, key = itemgetter(1))]
 
 		#print results, note special treatment of first sentence
