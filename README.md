@@ -4,6 +4,11 @@ WIP text summary script and (future)reddit bot/webservice - https://github.com/y
 A basic NLP project that summarizes text. Currently it's just a script.
 The ultimate goal is to make either a Reddit summary bot, or a text summary web service.
 
+Required:
+- python3
+- nltk
+- bs4
+
 To use:
 - Put text into test.txt
 - Run python summary.py in terminal
