@@ -1,5 +1,6 @@
 import nltk
 from operator import itemgetter, attrgetter
+
 """
 WIP Text summarizer - https://github.com/yangdanny97/summarizer
 A basic NLP project that summarizes text. 
@@ -43,12 +44,10 @@ class Summarizer:
 		- number of sentences in summary (default to 20% if invalid)
 	- Add ability to parse text from website (see possible optimizations)
 
-
 	"""
-	def __init__(self, filename):
+	def __init__(self, text):
 		"""
-		Initialize with filename string
-		Parses original text into words, sentences, and tracks frequencies of nouns and proper nouns
+		Parses input string into words, sentences, and tracks frequencies of nouns and proper nouns
 		raw - the raw text string
 		sentences - a list of sentences of the original text
 		tokens - a list tokens of the original text
@@ -72,7 +71,15 @@ class Summarizer:
 				if i[0] not in self.freq: self.freq[i[0]] = 1
 				else: self.freq[i[0]]+=1
 		print("initialization complete")
+	
+	@classmethod
+	def from_file(cls, filename):
+		"""
+		Class method to create instance of Summarizer from a file input
 
+		"""
+		return cls.__init__(open(filename).read())
+	
 	def summarize(self, sentences):
 		"""
 		Summarize text in x number of sentences
@@ -92,7 +99,7 @@ class Summarizer:
 		summary = [self.format(i[0]) for i in sorted(scores, key = itemgetter(1))]
 
 		#print results, note special treatment of first sentence
-		print(" ".join([self.sentences[0]]+summary))
+		return " ".join([self.sentences[0]]+summary)
 
 	def score(self,sentence):
 		"""
@@ -113,6 +120,7 @@ class Summarizer:
 
 
 if __name__ == "__main__":
-	print("starting...")
+	print("starting example...")
 	summarizer = Summarizer("test.txt")
-	summarizer.summarize(len(summarizer.sentences)/5)
+	summary = summarizer.summarize(len(summarizer.sentences)/5)
+	print(summary)
