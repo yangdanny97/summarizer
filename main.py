@@ -15,8 +15,9 @@ class Bot:
                          username=os.environ.get('BOT_USERNAME'),
                          password=os.environ.get('BOT_PASSWORD'))
             self.subreddits_list = []
-            self.approved_sites = set([])
-            self.subreddits = reddit.subreddit('Test')
+            self.approved_sites = set()
+            self.subreddit_list = ['Test']
+            self.subreddits = reddit.subreddit("+".join(self.subreddits))
 
 
         def run(self):
