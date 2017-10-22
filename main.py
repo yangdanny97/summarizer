@@ -1,3 +1,4 @@
+import math
 import os
 import praw
 import tldextract
@@ -11,23 +12,27 @@ class Bot:
         def __init__(self):
             self.reddit = praw.Reddit(client_id=os.environ.get('CLIENT_ID'),
                          client_secret=os.environ.get('CLIENT_SECRET'),
-                         user_agent="News Article Summary Bot Test"
+                         user_agent="News Article Summary Bot Test",
                          username=os.environ.get('BOT_USERNAME'),
                          password=os.environ.get('BOT_PASSWORD'))
-            self.subreddits_list = []
-            self.approved_sites = set()
+            self.approved_sites = set(['nytimes'])
             self.subreddit_list = ['Test']
-            self.subreddits = reddit.subreddit("+".join(self.subreddits))
+            self.subreddits = self.reddit.subreddit("+".join(self.subreddit_list))
 
 
         def run(self):
-            for submission in subreddits.stream.submissions():
-                url_check = tldextract.extract(submission.extract).domain
+            for submission in self.subreddits.hot(limit=30):
+                url_check = tldextract.extract(submission.url).domain
                 proceed = False
                 for site in self.approved_sites:
-                    if url_check in self.approved_sites: proceed = True
+                    if url_check in self.approved_sites:
+                        proceed = True
+                        break
                 if proceed:
-                    self.create_summary(submission.url)
+                    summary = self.create_summary(submission.url)
+                    if summary != "":
+                        print(summary)
+                        submission.reply(summary)
 
         """
         Summarizes the article contained within the given url
@@ -38,9 +43,9 @@ class Bot:
             #3. return output of Summarizer, or empty string if any step fails
             text = Bot.get_article_text(url)
             summarizer = Summarizer(text)
-            if text=="" or len(summarizer.sentences)<16:
+            if text == "" or len(summarizer.sentences)<16:
                 return ""
-            summary = summarizer.summarize(len(summarizer.sentences)/shrinker)
+            summary = summarizer.summarize(min(int(3+len(summarizer.sentences)/shrinker), 5))
             return summary
 
         @staticmethod
