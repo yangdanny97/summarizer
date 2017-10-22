@@ -43,9 +43,9 @@ class Bot:
             #3. return output of Summarizer, or empty string if any step fails
             text = Bot.get_article_text(url)
             summarizer = Summarizer(text)
-            if text == "" or len(summarizer.sentences)<16:
+            if text == "" or len(summarizer.sentences)<16 or len(summarizer.sentences>35):
                 return ""
-            summary = summarizer.summarize(min(int(3+len(summarizer.sentences)/shrinker), 5))
+            summary = summarizer.summarize(min(int(len(summarizer.sentences)/shrinker), 5))
             return summary
 
         @staticmethod
