@@ -8,11 +8,15 @@ class Bot:
         A single instance of the bot
         """
         def __init__(self):
-                """self.reddit = praw.Reddit(client_id='my client id',
-                             client_secret='my client secret',
-                             user_agent='my user agent',
-                             username=os.environ.get('BOT_USERNAME'),
-                             password=os.environ.get('BOT_PASSWORD'))"""
+            self.reddit = praw.Reddit(client_id=os.environ.get('CLIENT_ID'),
+                         client_secret=os.environ.get('CLIENT_SECRET'),
+                         user_agent="user_agent"
+                         username=os.environ.get('BOT_USERNAME'),
+                         password=os.environ.get('BOT_PASSWORD'))
+            self.subreddits = reddit.subreddit('Test')
+
+        def run(self):
+            pass
 
 
 
